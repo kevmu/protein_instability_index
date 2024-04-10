@@ -28,7 +28,6 @@ for record in SeqIO.parse(fasta_infile, "fasta"):
     CterminalNC = int(input_CterminalNC)
     NterminalNC = int(input_NterminalNC)
 
-    # this is where I'm struggleing in that I need a number of column variables = to the NterminalNC integer
     protein_seq = str(protein_seq_record)
 
     #csv_outfile = os.path.join(output_dir, "test.csv")
@@ -51,7 +50,7 @@ for record in SeqIO.parse(fasta_infile, "fasta"):
         c1list = []
         
         # Protein sequence starting with full length.
-        seq = protein_seq
+        seq = ""
         for input_NterminalNC_value in range(0, input_NterminalNC, 1):
             
                         
