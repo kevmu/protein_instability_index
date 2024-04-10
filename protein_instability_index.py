@@ -14,7 +14,7 @@ for record in SeqIO.parse(fasta_infile, "fasta"):
     seq_description = record.description
     
     #the amino acids left over from the cut site
-    leftoverres = ("SN")
+    left_over_res = ("SN")
 
     # sequnece of the construct with all noncritical residues
     protein_seq_record = record.seq
@@ -38,30 +38,45 @@ for record in SeqIO.parse(fasta_infile, "fasta"):
     csv_output_file = open(csv_outfile, 'w+')
     csv_writer = csv.writer(csv_output_file, delimiter='\t', quotechar='"', quoting=csv.QUOTE_NONE)
 
-    # Will be for header. Can make it work by getting the numbers before hand.
-    #csv_writer.writerow([])
-
     # Get the length of the protein sequence so we can remove amino acids from the C terminus end.
     protein_length = len(protein_seq)
     
+    # Get the amino acid position for the N-terminal for the header of the output file.
+    header_list = []
+    for NterminalNC_index in range(0, NterminalNC, 1):
+        #print((NterminalNC_index + 1))
+        NterminalNC_position = (NterminalNC_index + 1)
+        header_list.append(str(NterminalNC_position))
+        
+    # Write the header row.
+    csv_writer.writerow([""] + header_list)
+    
+    # Delete header list.
+    del header_list
+    
+    # Protein sequence starting with full length.
+    seq = protein_seq
+    
     # Starting at the C terminal region of the protein at the length of the protein.
-    for CterminalNC_value in range(protein_length, (protein_length - CterminalNC) - 1, -1):
+    for CterminalNC_index in range(protein_length, (protein_length - CterminalNC), -1):
         
-        c1list = []
+        instability_index_list = []
         
-        # Protein sequence starting with full length.
-        seq = ""
-        for input_NterminalNC_value in range(0, input_NterminalNC, 1):
+        CterminalNC_position = CterminalNC_index
+        for NterminalNC_index in range(0, NterminalNC, 1):
             
-                        
-            seq = protein_seq[input_NterminalNC_value:CterminalNC_value]
-            
-            analysed_seq = ProteinAnalysis(leftoverres + seq)
+            seq = protein_seq[NterminalNC_index:CterminalNC_index]
+            analysed_seq = ProteinAnalysis(left_over_res + seq)
             analysed_seq.instability_index()
-            print(", ".join([str(input_NterminalNC_value),str(CterminalNC_value), str(round(analysed_seq.instability_index(), 2))]))
+            
+            print(", ".join([str(NterminalNC_index),str(CterminalNC_index), str(round(analysed_seq.instability_index(), 2))]))
             print(seq)
-            c1list.append(round(analysed_seq.instability_index(), 2))
+            
+            instability_index_list.append(round(analysed_seq.instability_index(), 2))
+            
 
-        csv_writer.writerow(c1list)
+
+        
+        csv_writer.writerow([str(CterminalNC_position)] + instability_index_list)
 
 
